@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="http://bernardo-castilho.github.io/DragDropTouch/DragDropTouch.js"></script>
+<style>
+.recv {
+  width: 350px;
+  min-height: 70px;
+  padding: 10px;
+  border: 1px solid #aaaaaa;
+}
+.draggable {
+    cursor: grab;
+}
+.long, *[tgt='long']{
+    border: 2px solid green;
+}
+.short, *[tgt='short']{
+    border: 2px solid blue;
+}
+#item1{
+    width: 300px;
+}
+#item1 img{
+    -webkit-user-drag: none;
+    user-drag: none;
+}
+*[nondraggable]{
+    opacity: 0.5;
+}
+</style>
+<script>
+var dragElement = null
+var clearId = null
+function allowDrop(ev) {
+  var tgt = dragElement.getAttribute('tgt')
+  var classes = ev.target.className.split(' ')
+  if (classes.indexOf(tgt)>-1) {
+    ev.preventDefault();  
+    console.log(tgt)
+    ev.target.style.opacity='';
+    ev.target.setAttribute('dropable',true);
+    clearTimeout(clearId)
+    clearId=setTimeout(function(){ev.target.removeAttribute('dropable');},300)
+  } else {
+    ev.target.setAttribute('nondropable',true);
+    clearTimeout(clearId)
+    clearId=setTimeout(function(){ev.target.removeAttribute('nondraggable');},300)
+  }
+}
+
+function drag(ev) {
+  ev.dataTransfer.setData("text", ev.target.id);
+  dragElement = ev.target;
+}
+
+function drop(ev) {
+  ev.preventDefault();
+  var data = ev.dataTransfer.getData("text");
+  ev.target.appendChild(document.getElementById(data));
+}
+</script>
+</head>
+<body>
+
+<p>Drag the image into the rectangle:</p>
+
+<div id="div1" class="recv long" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="div2" class="recv short" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<br>
+<img id="drag1" class="draggable" tgt="long" src="https://via.placeholder.com/300x70" draggable="true" ondragstart="drag(event)" width="300" height="70">
+<img id="drag2" class="draggable" tgt="short" src="https://via.placeholder.com/300x35" draggable="true" ondragstart="drag(event)" width="300" height="35">
+<img id="drag3" class="draggable" tgt="short" src="https://via.placeholder.com/300x30" draggable="true" ondragstart="drag(event)" width="300" height="30">
+<div id="item1" class="draggable" tgt="long" draggable="true" ondragstart="drag(event)">
+    Item 1 content
+    <br>
+    <img src="https://via.placeholder.com/300x20" draggable="true" width="300" height="20">
+</div>
+<br>
+<div id="div3" class="recv short" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="div4" class="recv long" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+</body>
+</html>
